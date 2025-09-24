@@ -40,6 +40,41 @@ h3 {
   padding-bottom: 0.3rem;
 }
 
+/* ====== Caja de búsqueda ====== */
+.search-box {
+  display: flex;
+  flex-direction: column;     /* Coloca input arriba y botón debajo */
+  justify-content: center;
+  align-items: center;
+  gap: 10px;                  /* Espacio entre input y botón */
+  margin: 1rem auto 2rem;
+  text-align: center;
+}
+
+.search-box input {
+  padding: 10px;
+  border: 2px solid #457b9d;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 250px; /* un poco más ancho para mejorar */
+}
+
+.search-box button {
+  padding: 10px 20px;
+  background: #f77f00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.search-box button:hover {
+  background: #d62828;
+  transform: scale(1.05);
+}
+
 /* ====== Tarjeta del Pokémon ====== */
 .pokemon-card {
   text-align: center;
