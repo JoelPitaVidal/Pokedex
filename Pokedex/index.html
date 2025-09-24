@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokedex</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="pokedex">
+    <h1>Pokedex</h1>
+
+    <!-- 🔎 Buscador -->
+    <div class="search-box">
+      <input type="text" id="pokemonInput" placeholder="Enter Pokémon name...">
+      <button id="btnSearch">Search</button>
+    </div>
+
+    <div class="pokemon-card">
+      <h2 id="nombre">---</h2>
+      <img id="imagen" src="" alt="Pokemon Image">
+      
+      <p><strong>Height:</strong> <span id="altura">---</span></p>
+      <p><strong>Weight:</strong> <span id="peso">---</span></p>
+      <p><strong>Types:</strong> <span id="tipos">---</span></p>
+      <p><strong>Abilities:</strong> <span id="habilidades">---</span></p>
+
+      <h3>Stats</h3>
+      <ul id="estadisticas"></ul>
+
+      <h3>Moves</h3>
+      <ul id="movimientos"></ul>
+
+      <button id="btnCry">Play Cry</button>
+      <audio id="cry"></audio>
+    </div>
+  </div>
+
+  <script>
+    async function loadPokemon(name) {
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`);
+        if (!res.ok) throw new Error("Pokémon not found");
+        const data = await res.json();
+
+        // General data
+        document.getElementById("nombre").textContent = data.name.toUpperCase();
+        document.getElementById("imagen").src = data.sprites.other["official-artwork"].front_default;
+        document.getElementById("imagen").alt = data.name;
+
+        document.getElementById("altura").textContent = data.height / 10 + " m";
+        document.getElementById("peso").textContent = data.weight / 10 + " kg";
+        document.getElementById("tipos").textContent = data.types.map(t => t.type.name).join(", ");
+        document.getElementById("habilidades").textContent = data.abilities.map(a => a.ability.name).join(", ");
+
+        // Stats
+        const statsList = document.getElementById("estadisticas");
+        statsList.innerHTML = "";
+        data.stats.forEach(stat => {
+          const li = document.createElement("li");
+          li.textContent = `${stat.stat.name}: ${stat.base_stat}`;
+          statsList.appendChild(li);
+        });
+
+        // Moves
+        const movesList = document.getElementById("movimientos");
+        movesList.innerHTML = "";
+        data.moves.slice(0, 10).forEach(move => { // ⚡ solo los primeros 10 movimientos
+          const li = document.createElement("li");
+          li.textContent = move.move.name;
+          movesList.appendChild(li);
+        });
+
+        // Cry (si existe en Gen 9)
+        const cry = document.getElementById("cry");
+        if (data.cries && data.cries.latest) {
+          cry.src = data.cries.latest;
+        } else {
+          cry.removeAttribute("src");
+        }
+
+      } catch (error) {
+        console.error("Error loading data:", error);
+        alert("Pokémon not found! Try again.");
+      }
+    }
+
+    // Search button
+    document.getElementById("btnSearch").addEventListener("click", () => {
+      const name = document.getElementById("pokemonInput").value.trim();
+      if (name) loadPokemon(name);
+    });
+
+    // Enter key support
+    document.getElementById("pokemonInput").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        document.getElementById("btnSearch").click();
+      }
+    });
+
+    // Play cry
+    document.getElementById("btnCry").addEventListener("click", () => {
+      const cry = document.getElementById("cry");
+      if (cry.src) cry.play();
+      else alert("This Pokémon has no cry available.");
+    });
+
+    // Load default Pokémon
+    loadPokemon("volcarona");
+  </script>
+</body>
+</html>
